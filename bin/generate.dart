@@ -6,16 +6,6 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as path;
 
-const _preservedKeywords = [
-  'few',
-  'many',
-  'one',
-  'other',
-  'two',
-  'zero',
-  'male',
-  'female',
-];
 
 void main(List<String> args) {
   if (_isHelpCommand(args)) {
@@ -155,8 +145,8 @@ void generateFile(List<FileSystemEntity> files, Directory outputPath,
 Future _writeKeys(StringBuffer classBuilder, List<FileSystemEntity> files,
     bool? skipUnnecessaryKeys) async {
   var file = '''
-import 'package:easy_localization/easy_localization.dart';\n
-// DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
+import 'package:modified_localization/easy_localization.dart';\n
+// This is code generated via package:modified_localization/generate.dart
 // Modified by @xaldarof
 // See https://github.com/xaldarof/modified-easy-localization
 
@@ -182,7 +172,7 @@ String _resolve(Map<String, dynamic> translations, bool? skipUnnecessaryKeys,
   final canIgnoreKeys = skipUnnecessaryKeys == true;
 
   bool containsPreservedKeywords(Map<String, dynamic> map) =>
-      map.keys.any((element) => _preservedKeywords.contains(element));
+      map.keys.any((element) => [].contains(element));
 
   for (var key in sortedKeys) {
     var ignoreKey = false;
@@ -201,7 +191,7 @@ String _resolve(Map<String, dynamic> translations, bool? skipUnnecessaryKeys,
           _resolve(translations[key], skipUnnecessaryKeys, nextAccKey);
     }
 
-    if (!_preservedKeywords.contains(key)) {
+    if (![].contains(key)) {
       var value = translations[key];
 
       if (value.contains("{}")) {
