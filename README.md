@@ -1,16 +1,62 @@
-# modified_localization
+# example
 
-A new Flutter project.
+Run in terminal : flutter pub run easy_localization:generate -f keys -o locale_keys.g.dart
 
-## Getting Started
+## example/resources/langs/en-EN.json
 
-This project is a starting point for a Flutter application.
+```json
+{
+  "hi": "Hi !",
+  "welcome": "Welcome {}"
+}
+```
 
-A few resources to get you started if this is your first Flutter project:
+Will be generated strings class like this, then you can use it without .tr(), if arguments needed will be generated args function
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```dart
+import 'package:easy_localization/easy_localization.dart';
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+// DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
+
+abstract class Strings {
+  static final hi = 'hi'.tr();
+
+  static String welcome(String arg0) {
+    return 'welcome'.tr(args: [arg0]);
+  }
+}
+```
+
+### [example/lib/main.dart](https://github.com/aissat/easy_localization/blob/master/example/lib/main.dart)
+
+```dart
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key? key, required this.title}) : super(key: key);
+
+  final String title;
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(Strings.hi),
+            Text(Strings.welcome("Flutter")),
+          ],
+        ),
+        alignment: Alignment.center,
+      ),
+    );
+  }
+}
+
+```
