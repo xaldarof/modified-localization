@@ -1,6 +1,6 @@
 # example
 
-Run in terminal : flutter pub run modified_localization:generate -o locale_keys.g.dart --source-dir langsg
+Run in terminal : flutter pub run modified_localization:generate -o locale_keys.g.dart --source-dir /your_dir
 
 ## example/resources/langs/en-EN.json
 
