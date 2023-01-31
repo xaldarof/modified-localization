@@ -66,14 +66,7 @@ ArgParser _generateArgParser(GenerateOptions? generateOptions) {
       defaultsTo: 'codegen_loader.g.dart',
       callback: (String? x) => generateOptions!.outputFile = x,
       help: 'Output file name');
-
-  parser.addOption('format',
-      abbr: 'f',
-      defaultsTo: 'json',
-      callback: (String? x) => generateOptions!.format = x,
-      help: 'Support json or keys formats',
-      allowed: ['json', 'keys']);
-
+  
   parser.addFlag(
     'skip-unnecessary-keys',
     abbr: 'u',
@@ -106,7 +99,7 @@ void handleLangFiles(GenerateOptions options) async {
   final output = Directory.fromUri(Uri.parse(options.outputDir!));
   final sourcePath = Directory(path.join(current.path, source.path));
   final outputPath =
-      Directory(path.join(current.path, output.path, options.outputFile));
+  Directory(path.join(current.path, output.path, options.outputFile));
 
   if (!await sourcePath.exists()) {
     printError('Source path does not exist');
@@ -151,19 +144,7 @@ void generateFile(List<FileSystemEntity> files, Directory outputPath,
 
   var classBuilder = StringBuffer();
 
-  switch (options.format) {
-    case 'json':
-      await _writeJson(classBuilder, files);
-      break;
-    case 'keys':
-      await _writeKeys(classBuilder, files, options.skipUnnecessaryKeys);
-      break;
-    // case 'csv':
-    //   await _writeCsv(classBuilder, files);
-    // break;
-    default:
-      printError('Format not support');
-  }
+  await _writeKeys(classBuilder, files, options.skipUnnecessaryKeys);
 
   classBuilder.writeln('}');
   generatedFile.writeAsStringSync(classBuilder.toString());
@@ -173,9 +154,8 @@ void generateFile(List<FileSystemEntity> files, Directory outputPath,
 
 Future _writeKeys(StringBuffer classBuilder, List<FileSystemEntity> files,
     bool? skipUnnecessaryKeys) async {
-
   var file = '''
-import 'package:modified_localization/easy_localization.dart';\n
+import 'package:easy_localization/easy_localization.dart';\n
 // DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
 // Modified by @xaldarof
 // See https://github.com/xaldarof/modified-easy-localization
@@ -186,7 +166,7 @@ abstract class Strings {
   final fileData = File(files.first.path);
 
   Map<String, dynamic> translations =
-      json.decode(await fileData.readAsString());
+  json.decode(await fileData.readAsString());
 
   file += _resolve(translations, skipUnnecessaryKeys);
 
@@ -209,7 +189,7 @@ String _resolve(Map<String, dynamic> translations, bool? skipUnnecessaryKeys,
     if (translations[key] is Map) {
       // If key does not contain keys for plural(), gender() etc. and option is enabled -> ignore it
       ignoreKey = !containsPreservedKeywords(
-              translations[key] as Map<String, dynamic>) &&
+          translations[key] as Map<String, dynamic>) &&
           canIgnoreKeys;
 
       var nextAccKey = key;
@@ -221,47 +201,48 @@ String _resolve(Map<String, dynamic> translations, bool? skipUnnecessaryKeys,
           _resolve(translations[key], skipUnnecessaryKeys, nextAccKey);
     }
 
-    // accKey != null && !ignoreKey
-    //             ? fileContent +=
-    //         '  static const ${accKey.replaceAll('.', '_')}_${key}Key = \'$accKey.$key\';\n'
-    //             : !ignoreKey
-    //             ? fileContent += '  static const ${key}Key = \'$key\';\n'
-    //             : null;
-
     if (!_preservedKeywords.contains(key)) {
       var value = translations[key];
 
-      if(value.contains("{}")) {
-        var argCount = '{}'.allMatches(value).length;
+      if (value.contains("{}")) {
+        var argCount = '{}'
+            .allMatches(value)
+            .length;
         var arguments = "";
         var argumentsValue = "";
-        for(int i = 0; i < argCount; i++) {
+        for (int i = 0; i < argCount; i++) {
           arguments += "String arg$i,";
           argumentsValue += "arg$i,";
         }
 
         accKey != null && !ignoreKey
-            ? fileContent +="""
-  static String ${toCamelCase(key)}(${arguments.substring(0, arguments.length - 1)}) {
-    return '${key}'.tr(args: [${argumentsValue.substring(0, argumentsValue.length - 1)}]);
+            ? fileContent += """
+  static String ${toCamelCase(key)}(${arguments.substring(
+            0, arguments.length - 1)}) {
+    return '${key}'.tr(args: [${argumentsValue.substring(
+            0, argumentsValue.length - 1)}]);
   }
 """
             : !ignoreKey
             ? fileContent += """
-  static String ${toCamelCase(key)}(${arguments.substring(0, arguments.length - 1)}) {
-    return '${key}'.tr(args: [${argumentsValue.substring(0, argumentsValue.length - 1)}]);
+  static String ${toCamelCase(key)}(${arguments.substring(
+            0, arguments.length - 1)}) {
+    return '${key}'.tr(args: [${argumentsValue.substring(
+            0, argumentsValue.length - 1)}]);
   }
 """
             : null;
       } else {
-      accKey != null && !ignoreKey
-          ? fileContent +=
-              '  static const ${accKey.replaceAll('.', '_')}_${toCamelCase(key)} = \'$accKey.$key\'.tr();\n'
-          : !ignoreKey
-              ? fileContent += '  static final ${toCamelCase(key)} = \'$key\'.tr();\n'
-              : null;
-    }
+        accKey != null && !ignoreKey
+            ? fileContent +=
+        '  static const ${accKey.replaceAll('.', '_')}_${toCamelCase(
+            key)} = \'$accKey.$key\'.tr();\n'
+            : !ignoreKey
+            ?
+        fileContent += '  static final ${toCamelCase(key)} = \'$key\'.tr();\n'
+            : null;
       }
+    }
   }
 
   return fileContent;
@@ -283,68 +264,6 @@ String toCamelCase(String str, {String? splitter}) {
   }
   return valueStr;
 }
-
-Future _writeJson(
-    StringBuffer classBuilder, List<FileSystemEntity> files) async {
-  var gFile = '''
-// DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
-// Modified by @xaldarof
-// See https://github.com/xaldarof/modified-easy-localization
-
-// ignore_for_file: prefer_single_quotes
-
-import 'dart:ui';
-
-import 'package:modified_localization/easy_localization.dart' show AssetLoader;
-
-class CodegenLoader extends AssetLoader{
-  const CodegenLoader();
-
-  @override
-  Future<Map<String, dynamic>> load(String fullPath, Locale locale ) {
-    return Future.value(mapLocales[locale.toString()]);
-  }
-
-  ''';
-
-  final listLocales = [];
-
-  for (var file in files) {
-    final localeName =
-        path.basename(file.path).replaceFirst('.json', '').replaceAll('-', '_');
-    listLocales.add('"$localeName": $localeName');
-    final fileData = File(file.path);
-
-    Map<String, dynamic>? data = json.decode(await fileData.readAsString());
-
-    final mapString = const JsonEncoder.withIndent('  ').convert(data);
-    gFile += 'static const Map<String,dynamic> $localeName = $mapString;\n';
-  }
-
-  gFile +=
-      'static const Map<String, Map<String,dynamic>> mapLocales = {${listLocales.join(', ')}};';
-  classBuilder.writeln(gFile);
-}
-
-// _writeCsv(StringBuffer classBuilder, List<FileSystemEntity> files) async {
-//   List<String> listLocales = List();
-//   final fileData = File(files.first.path);
-
-//   // CSVParser csvParser = CSVParser(await fileData.readAsString());
-
-//   // List listLangs = csvParser.getLanguages();
-//   for(String localeName in listLangs){
-//     listLocales.add('"$localeName": $localeName');
-//     String mapString = JsonEncoder.withIndent("  ").convert(csvParser.getLanguageMap(localeName)) ;
-
-//     classBuilder.writeln(
-//       '  static const Map<String,dynamic> $localeName = ${mapString};\n');
-//   }
-
-//   classBuilder.writeln(
-//       '  static const Map<String, Map<String,dynamic>> mapLocales = \{${listLocales.join(', ')}\};');
-
-// }
 
 void printInfo(String info) {
   log('\u001b[32measy localization: $info\u001b[0m');
