@@ -14,10 +14,6 @@ Run in terminal : flutter pub run modified_localization:generate -o locale_keys.
 Will be generated strings class like this, then you can use it without .tr(), if arguments needed will be generated args function
 
 ```dart
-import 'package:easy_localization/easy_localization.dart';
-
-// DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
-
 abstract class Strings {
   static final hi = 'hi'.tr();
 
