@@ -10,7 +10,7 @@ Run in terminal : flutter pub run modified_localization:generate -o locale_keys.
   "welcome": "Welcome {}"
 }
 ```
-
+ 
 Will be generated strings class like this, then you can use it without .tr(), if arguments needed will be generated args function
 
 ```dart
