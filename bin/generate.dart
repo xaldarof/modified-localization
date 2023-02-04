@@ -229,7 +229,7 @@ String _resolve(Map<String, dynamic> translations, bool? skipUnnecessaryKeys,
             key)} = \'$accKey.$key\'.tr();\n'
             : !ignoreKey
             ?
-        fileContent += '  static final ${toCamelCase(key)} = \'$key\'.tr();\n'
+        fileContent += '  static String get ${toCamelCase(key)} => \'$key\'.tr();\n'
             : null;
       }
     }

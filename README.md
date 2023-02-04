@@ -15,7 +15,7 @@ Will be generated strings class like this, then you can use it without .tr(), if
 
 ```dart
 abstract class Strings {
-  static final hi = 'hi'.tr();
+  static String get hi => 'hi'.tr();
 
   static String welcome(String arg0) {
     return 'welcome'.tr(args: [arg0]);
