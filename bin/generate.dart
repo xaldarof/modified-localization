@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:modified_localization/easy_localization.dart';
 import 'package:path/path.dart' as path;
 
 
@@ -56,7 +57,7 @@ ArgParser _generateArgParser(GenerateOptions? generateOptions) {
       defaultsTo: 'codegen_loader.g.dart',
       callback: (String? x) => generateOptions!.outputFile = x,
       help: 'Output file name');
-  
+
   parser.addFlag(
     'skip-unnecessary-keys',
     abbr: 'u',
@@ -207,17 +208,17 @@ String _resolve(Map<String, dynamic> translations, bool? skipUnnecessaryKeys,
 
         accKey != null && !ignoreKey
             ? fileContent += """
-  static String ${toCamelCase(key)}(${arguments.substring(
+  static String ${key.toCamelCase()}(${arguments.substring(
             0, arguments.length - 1)}) {
-    return '${key}'.tr(args: [${argumentsValue.substring(
+    return '$key'.tr(args: [${argumentsValue.substring(
             0, argumentsValue.length - 1)}]);
   }
 """
             : !ignoreKey
             ? fileContent += """
-  static String ${toCamelCase(key)}(${arguments.substring(
+  static String ${key.toCamelCase()}(${arguments.substring(
             0, arguments.length - 1)}) {
-    return '${key}'.tr(args: [${argumentsValue.substring(
+    return '$key'.tr(args: [${argumentsValue.substring(
             0, argumentsValue.length - 1)}]);
   }
 """
@@ -225,34 +226,16 @@ String _resolve(Map<String, dynamic> translations, bool? skipUnnecessaryKeys,
       } else {
         accKey != null && !ignoreKey
             ? fileContent +=
-        '  static const ${accKey.replaceAll('.', '_')}_${toCamelCase(
-            key)} = \'$accKey.$key\'.tr();\n'
+        '  static const ${accKey.replaceAll('.', '_')}_${key.toCamelCase()} = \'$accKey.$key\'.tr();\n'
             : !ignoreKey
             ?
-        fileContent += '  static String get ${toCamelCase(key)} => \'$key\'.tr();\n'
+        fileContent += '  static String get ${key.toCamelCase()} => \'$key\'.tr();\n'
             : null;
       }
     }
   }
 
   return fileContent;
-}
-
-String toCamelCase(String str, {String? splitter}) {
-  var value = str.split("");
-  var valueStr = "";
-  for (int i = 0; i < value.length; i++) {
-    if (value[i] == (splitter ?? "_")) {
-      if (i < value.length) {
-        value[i + 1] = value[i + 1].toUpperCase();
-        value.removeAt(i);
-      }
-    }
-  }
-  for (var element in value) {
-    valueStr += element;
-  }
-  return valueStr;
 }
 
 void printInfo(String info) {
