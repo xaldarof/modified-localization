@@ -1,8 +1,8 @@
+import 'package:encrypt_shared_preferences/enc_shared_pref.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl_standalone.dart'
     if (dart.library.html) 'package:intl/intl_browser.dart';
 import 'package:modified_localization/easy_localization.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'translations.dart';
 
@@ -14,6 +14,7 @@ class EasyLocalizationController extends ChangeNotifier {
   Locale? _fallbackLocale;
 
   final Function(FlutterError e) onLoadError;
+
   // ignore: prefer_typing_uninitialized_variables
   final assetLoader;
   final String path;
@@ -21,7 +22,9 @@ class EasyLocalizationController extends ChangeNotifier {
   final bool saveLocale;
   final bool useOnlyLangCode;
   Translations? _translations, _fallbackTranslations;
+
   Translations? get translations => _translations;
+
   Translations? get fallbackTranslations => _fallbackTranslations;
 
   EasyLocalizationController({
@@ -140,13 +143,13 @@ class EasyLocalizationController extends ChangeNotifier {
 
   Future<void> _saveLocale(Locale? locale) async {
     if (!saveLocale) return;
-    final preferences = await SharedPreferences.getInstance();
+    final preferences = await EncryptedSharedPreferences.getInstance();
     await preferences.setString('locale', locale.toString());
     EasyLocalization.logger('Locale $locale saved');
   }
 
   static Future<void> initEasyLocation() async {
-    final preferences = await SharedPreferences.getInstance();
+    final preferences = await EncryptedSharedPreferences.getInstance();
     final strLocale = preferences.getString('locale');
     _savedLocale = strLocale?.toLocale();
     final foundPlatformLocale = await findSystemLocale();
@@ -156,7 +159,7 @@ class EasyLocalizationController extends ChangeNotifier {
 
   Future<void> deleteSaveLocale() async {
     _savedLocale = null;
-    final preferences = await SharedPreferences.getInstance();
+    final preferences = await EncryptedSharedPreferences.getInstance();
     await preferences.remove('locale');
     EasyLocalization.logger('Saved locale deleted');
   }
