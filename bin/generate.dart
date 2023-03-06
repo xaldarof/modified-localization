@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:modified_localization/easy_localization.dart';
 import 'package:path/path.dart' as path;
 
 
@@ -244,4 +243,26 @@ void printInfo(String info) {
 
 void printError(String error) {
   log('\u001b[31m[ERROR] easy localization: $error\u001b[0m');
+}
+
+extension StringExt on String {
+  String toCamelCase({String? splitter = "_"}) {
+    var chars = split("");
+    var formatted = "";
+    for (int i = 0; i < chars.length; i++) {
+      if (chars[i] == splitter && (i) < chars.length - 1) {
+        chars[i + 1] = chars[i + 1].toUpperCase();
+        chars.removeAt(i);
+      }
+    }
+    for (var element in chars) {
+      formatted += element;
+    }
+    if (formatted.endsWith(splitter!) && formatted.isNotEmpty) {
+      return formatted
+          .substring(0, formatted.length - 1)
+          .toCamelCase(splitter: splitter);
+    }
+    return formatted;
+  }
 }
