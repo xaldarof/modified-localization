@@ -1,6 +1,9 @@
+[![pub package](https://img.shields.io/pub/v/shared_preferences.svg)](https://pub.dev/packages/modified_localization)
+
+
 # example
 
-Run in terminal : flutter pub run modified_localization:generate -o locale_keys.g.dart --source-dir /your_dir
+Run in terminal : `flutter pub run modified_localization:generate -o locale_keys.g.dart --source-dir /your_dir`
 
 ## example/resources/langs/en-EN.json
 
